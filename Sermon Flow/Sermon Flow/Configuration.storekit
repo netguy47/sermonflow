@@ -1,0 +1,72 @@
+{
+  "identifier" : "SermonFlowPro",
+  "nonRenewingSubscriptions" : [
+  ],
+  "products" : [
+  ],
+  "settings" : {
+    "_applicationInternalID" : "com.sermonflow.ios",
+    "_developerTeamID" : "TEAMID",
+    "_lastObjectsMutationID" : 1
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "SF_PREMIUM_GROUP",
+      "localizations" : [
+      ],
+      "name" : "Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+          ],
+          "codeOffers" : [
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "com.sermonflow.pro.monthly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlimited Notes & Presentation Mode",
+              "displayName" : "SermonFlow Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.sermonflow.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Pro Monthly",
+          "subscriptionGroupID" : "SF_PREMIUM_GROUP",
+          "type" : "Recurring Subscription"
+        },
+        {
+          "adHocOffers" : [
+          ],
+          "codeOffers" : [
+          ],
+          "displayPrice" : "49.99",
+          "familyShareable" : true,
+          "groupNumber" : 2,
+          "internalID" : "com.sermonflow.pro.yearly",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Annual access to all Pro features",
+              "displayName" : "SermonFlow Pro Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.sermonflow.pro.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Pro Yearly",
+          "subscriptionGroupID" : "SF_PREMIUM_GROUP",
+          "type" : "Recurring Subscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

@@ -1,0 +1,20 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+/* Begin PBXFileReference section */
+		DA1234561234567890ABCDEF /* SermonFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SermonFlowApp.swift; sourceTree = "<group>"; };
+		DA1234571234567890ABCDE1 /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = "<group>"; };
+		DA1234581234567890ABCDE2 /* Services */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Services; sourceTree = "<group>"; };
+		DA1234591234567890ABCDE3 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; path = UI; sourceTree = "<group>"; };
+		DA1234601234567890ABCDE4 /* Views */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Views; sourceTree = "<group>"; };
+		DA1234611234567890ABCDE5 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		DA1234621234567890ABCDE6 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		DA1234631234567890ABCDE7 /* web.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources/web.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+	};
+	rootObject = DA1234641234567890ABCDE8 /* Project object */;
+}

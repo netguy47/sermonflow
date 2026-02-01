@@ -2,19 +2,50 @@ import SwiftUI
 
 struct NoteCardView: View {
     let note: SermonNote
+    var onDelete: (() -> Void)? = nil
+    var onExport: (() -> Void)? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(note.title)
-                    .font(SermonFont.title(size: 20))
-                    .foregroundColor(Color.charcoal)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(note.title)
+                        .font(SermonFont.title(size: 20))
+                        .foregroundColor(Color.charcoal)
+                    
+                    if let series = note.seriesTitle {
+                        Text(series)
+                            .font(SermonFont.caption(size: 14))
+                            .foregroundColor(.sermonGold)
+                            .italic()
+                    }
+                }
                 
                 Spacer()
                 
-                if note.isLifeApplication {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.sermonGold)
+                HStack(spacing: 16) {
+                    if note.isLifeApplication {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.sermonGold)
+                    }
+                    
+                    Menu {
+                        if let onExport = onExport {
+                            Button(action: onExport) {
+                                Label("Export to PDF", systemImage: "doc.richtext")
+                            }
+                        }
+                        
+                        if let onDelete = onDelete {
+                            Button(role: .destructive, action: onDelete) {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.system(size: 22))
+                            .foregroundColor(.sermonGold)
+                    }
                 }
             }
             
@@ -28,6 +59,13 @@ struct NoteCardView: View {
                 Text(note.timestamp, style: .date)
                     .font(SermonFont.caption())
                     .foregroundColor(Color.charcoal.opacity(0.6))
+                
+                if note.id != nil {
+                    Image(systemName: "icloud.and.arrow.up")
+                        .font(.system(size: 10))
+                        .foregroundColor(.green.opacity(0.6))
+                        .help("Synced to Cloud")
+                }
                 
                 Spacer()
                 

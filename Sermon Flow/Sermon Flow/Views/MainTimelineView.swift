@@ -10,6 +10,9 @@ struct MainTimelineView: View {
     @State private var selectedNote: SermonNote? = nil
     @StateObject private var purchaseManager = PurchaseManager.shared
     @State private var showPaywall = false
+    @State private var shareURL: URL? = nil
+    @State private var showingShareSheet = false
+    @State private var scrollToTopTrigger = false
     
     private let freeNoteLimit = 5
     
@@ -37,18 +40,60 @@ struct MainTimelineView: View {
                 } else {
                     HStack(spacing: 0) {
                         ScrollViewReader { proxy in
-                            ScrollView {
-                                LazyVStack(spacing: 16) {
+                            ZStack(alignment: .bottomTrailing) {
+                                List {
+                                    Color.clear
+                                        .frame(height: 1)
+                                        .id("top")
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets())
+                                    
                                     ForEach(filteredNotes) { note in
-                                        NoteCardView(note: note)
-                                            .onTapGesture {
-                                                selectedNote = note
-                                                showingEditor = true
-                                            }
-                                            .id(note.id)
+                                        NoteCardView(
+                                            note: note,
+                                            onDelete: { deleteNote(note) },
+                                            onExport: { exportToPDF(note: note) }
+                                        )
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                        .onTapGesture {
+                                            selectedNote = note
+                                            showingEditor = true
+                                        }
+                                        .id(note.id)
+                                    }
+                                    .onDelete { indexSet in
+                                        for index in indexSet {
+                                            deleteNote(filteredNotes[index])
+                                        }
                                     }
                                 }
-                                .padding()
+                                .listStyle(.plain)
+                                .onChange(of: notes.count) { _ in
+                                    // Optional: logic to scroll to top on new note
+                                }
+                                .onChange(of: scrollToTopTrigger) { _ in
+                                    withAnimation(.spring()) {
+                                        proxy.scrollTo("top", anchor: .top)
+                                    }
+                                }
+                                
+                                // Floating Scroll to Top Button
+                                Button(action: {
+                                    scrollToTopTrigger.toggle()
+                                }) {
+                                    Image(systemName: "chevron.up")
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .background(Color.sermonGold)
+                                        .clipShape(Circle())
+                                        .shadow(radius: 4)
+                                }
+                                .padding(.trailing, 20)
+                                .padding(.bottom, 20)
                             }
                         }
                         
@@ -56,10 +101,23 @@ struct MainTimelineView: View {
                     }
                 }
             }
-            .navigationTitle("Sermon Flow")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText, prompt: "Search notes or verses...")
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Button(action: {
+                        scrollToTopTrigger.toggle()
+                    }) {
+                        HStack(spacing: 4) {
+                            Text("Sermon Flow")
+                                .font(SermonFont.serif(size: 20, weight: .bold))
+                            Image(systemName: "chevron.up.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(.sermonGold)
+                        }
+                        .foregroundColor(.black)
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         if !purchaseManager.isSubscribed && notes.count >= freeNoteLimit {
@@ -94,8 +152,9 @@ struct MainTimelineView: View {
                     }
                 }
             }
+            .searchable(text: $searchText, prompt: "Search notes or verses...")
             .sheet(isPresented: $showingEditor) {
-                NoteEditorView(note: selectedNote)
+                NewNoteView(note: selectedNote)
             }
             .sheet(isPresented: $showPaywall) {
                 SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
@@ -110,8 +169,42 @@ struct MainTimelineView: View {
                 firebaseService.signInAnonymously { _ in }
             }
         }
+        .sheet(isPresented: $showingShareSheet) {
+            if let url = shareURL {
+                ShareSheet(activityItems: [url])
+            }
+        }
         .accentColor(.sermonGold)
     }
+    
+    private func deleteNote(_ note: SermonNote) {
+        guard let id = note.id else { return }
+        firebaseService.deleteNote(id: id) { error in
+            if let error = error {
+                print("Error deleting note: \(error.localizedDescription)")
+            } else {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            }
+        }
+    }
+    
+    private func exportToPDF(note: SermonNote) {
+        if let url = PDFManager.shared.generatePDF(from: note) {
+            self.shareURL = url
+            self.showingShareSheet = true
+        }
+    }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 struct DateScrubber: View {

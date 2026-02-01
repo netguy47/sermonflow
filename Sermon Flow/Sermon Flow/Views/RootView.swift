@@ -12,7 +12,7 @@ struct RootView: View {
                 }
                 .tag(0)
             
-            SermonArchitectView()
+            SermonArchitectView(selectedTab: $selectedTab)
                 .tabItem {
                     Label("Create", systemImage: "sparkles")
                 }

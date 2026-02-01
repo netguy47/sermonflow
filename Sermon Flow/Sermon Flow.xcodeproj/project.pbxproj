@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		51613E122F2EF00100CD5CF2 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51E14B232F2D935B003A5BC6 /* FirebaseCore */; };
+		51613E132F2EF00100CD5CF2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 51E14B242F2D935B003A5BC6 /* FirebaseFirestore */; };
+		51613E142F2EF00100CD5CF2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 51E14B252F2D935B003A5BC6 /* FirebaseAuth */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		51E14AE22F2D771D003A5BC6 /* Sermon Flow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sermon Flow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +29,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51613E142F2EF00100CD5CF2 /* FirebaseAuth in Frameworks */,
+				51613E132F2EF00100CD5CF2 /* FirebaseFirestore in Frameworks */,
+				51613E122F2EF00100CD5CF2 /* FirebaseCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +74,9 @@
 			);
 			name = "Sermon Flow";
 			packageProductDependencies = (
+				51E14B232F2D935B003A5BC6 /* FirebaseCore */,
+				51E14B242F2D935B003A5BC6 /* FirebaseFirestore */,
+				51E14B252F2D935B003A5BC6 /* FirebaseAuth */,
 			);
 			productName = "Sermon Flow";
 			productReference = 51E14AE22F2D771D003A5BC6 /* Sermon Flow.app */;
@@ -181,7 +193,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -346,6 +358,24 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		51E14B232F2D935B003A5BC6 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E14B222F2D935B003A5BC6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		51E14B242F2D935B003A5BC6 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E14B222F2D935B003A5BC6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		51E14B252F2D935B003A5BC6 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E14B222F2D935B003A5BC6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 51E14ADA2F2D771D003A5BC6 /* Project object */;
 }

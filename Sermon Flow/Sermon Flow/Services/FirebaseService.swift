@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
@@ -16,10 +17,8 @@ class FirebaseService: ObservableObject {
     }
     
     private func setupFirestore() {
-        let settings = FirestoreSettings()
-        // Firestore has offline persistence enabled by default on iOS, 
-        // but we can explicitly set it if needed.
-        settings.isPersistenceEnabled = true
+        let settings = db.settings
+        // Persistence is enabled by default. To explicitly configure:
         settings.cacheSettings = PersistentCacheSettings()
         db.settings = settings
     }
@@ -60,5 +59,9 @@ class FirebaseService: ObservableObject {
                 }
                 completion(notes)
             }
+    }
+    
+    func deleteNote(id: String, completion: @escaping (Error?) -> Void) {
+        db.collection("notes").document(id).delete(completion: completion)
     }
 }

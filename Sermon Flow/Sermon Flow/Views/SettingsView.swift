@@ -7,12 +7,14 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section(header: Text("SermonFlow Pro").font(SermonFont.caption())) {
+            Section(header: Text("SermonFlow Pro")
+                .font(SermonFont.caption())
+                .foregroundColor(.charcoal.opacity(0.8))) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text(purchaseManager.isSubscribed ? "Pro Active" : "Unlock Pro")
                             .font(SermonFont.body(size: 16))
-                            .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .primary)
+                            .foregroundColor(purchaseManager.isSubscribed ? .sermonGoldDark : .primary)
                         
                         Text(purchaseManager.isSubscribed ? "Thank you for your support!" : "Unlimited presentations & more.")
                             .font(SermonFont.caption())
@@ -22,7 +24,11 @@ struct SettingsView: View {
                     Spacer()
                     
                     if !purchaseManager.isSubscribed {
-                        Button(action: { showPaywall = true }) {
+                        Button(action: { 
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                showPaywall = true 
+                            }
+                        }) {
                             Text("Upgrade")
                                 .font(SermonFont.caption())
                                 .bold()
@@ -32,6 +38,7 @@ struct SettingsView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(20)
                         }
+                        .buttonStyle(BouncyButtonStyle())
                     } else {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundColor(.sermonGold)
@@ -39,7 +46,9 @@ struct SettingsView: View {
                 }
             }
             
-            Section(header: Text("Informaton").font(SermonFont.caption())) {
+            Section(header: Text("Information")
+                .font(SermonFont.caption())
+                .foregroundColor(.charcoal.opacity(0.8))) {
                 NavigationLink(destination: PrivacyPolicyView()) {
                     Text("Privacy Policy")
                         .font(SermonFont.body(size: 16))
@@ -51,7 +60,9 @@ struct SettingsView: View {
                 }
             }
             
-            Section(header: Text("App Info").font(SermonFont.caption())) {
+            Section(header: Text("App Info")
+                .font(SermonFont.caption())
+                .foregroundColor(.charcoal.opacity(0.8))) {
                 HStack {
                     Text("Version")
                         .font(SermonFont.body(size: 16))
@@ -69,6 +80,14 @@ struct SettingsView: View {
             SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
                 .subscriptionStoreControlStyle(.picker)
         }
+    }
+}
+
+struct BouncyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

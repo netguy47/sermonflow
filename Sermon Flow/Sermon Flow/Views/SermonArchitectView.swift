@@ -13,7 +13,8 @@ struct SermonArchitectView: View {
     @State private var showPaywall = false
     
     var body: some View {
-        ZStack {
+        NavigationStack {
+            ZStack {
                 Color.parchment.ignoresSafeArea()
                 
                 VStack(spacing: 24) {
@@ -154,61 +155,63 @@ struct SermonArchitectView: View {
                 .padding(.top, 20)
                 .animation(.spring(response: 0.5, dampingFraction: 0.85), value: generationComplete)
                 .animation(.spring(), value: isGenerating)
-                    }
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .principal) {
-                            Text("Sermon Architect")
-                                .font(SermonFont.serif(size: 18, weight: .bold))
-                                .foregroundColor(.charcoal)
-                        }
-                        
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                selectedTab = 0
-                            }) {
-                                HStack {
-                                    Image(systemName: "house.fill")
-                                    Text("Home")
-                                }
-                                .font(.headline)
-                                .foregroundColor(.sermonGold)
-                            }
-                        }
-                    }
-                    .sheet(isPresented: $showingDisclosure) {
-                        AIDisclosureView {
-                            startGeneration()
-                        }
-                    }
-                    .sheet(isPresented: $showPaywall) {
-                        SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
-                            .subscriptionStoreControlStyle(.picker)
-                    }
-                    .alert("Report Content", isPresented: $showingReport) {
-                        Button("Reporthallucination", role: .destructive) { }
-                        Button("Cancel", role: .cancel) { }
-                    } message: {
-                        Text("Is this AI-generated content inaccurate or inappropriate?")
-                    }
+            }
+            .navigationTitle("Sermon Architect")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Sermon Architect")
+                        .font(SermonFont.serif(size: 18, weight: .bold))
+                        .foregroundColor(.charcoal)
                 }
-            
-            private func startGeneration() {
-                isGenerating = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    isGenerating = false
-                    generationComplete = true
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        selectedTab = 0
+                    }) {
+                        HStack {
+                            Image(systemName: "house.fill")
+                            Text("Home")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.sermonGold)
+                    }
                 }
             }
+            .sheet(isPresented: $showingDisclosure) {
+                AIDisclosureView {
+                    startGeneration()
+                }
+            }
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
+                    .subscriptionStoreControlStyle(.picker)
+            }
+            .alert("Report Content", isPresented: $showingReport) {
+                Button("Reporthallucination", role: .destructive) { }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Is this AI-generated content inaccurate or inappropriate?")
+            }
         }
+    }
+    
+    private func startGeneration() {
+        isGenerating = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            isGenerating = false
+            generationComplete = true
+        }
+    }
+}
 
-        struct PressedButtonStyle: ButtonStyle {
-            func makeBody(configuration: Configuration) -> some View {
-                configuration.label
-                    .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-                    .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
-            }
-        }
+struct PressedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
 
 struct AIDisclosureView: View {
     var onAccept: () -> Void

@@ -31,7 +31,8 @@ struct MainTimelineView: View {
     }
     
     var body: some View {
-        ZStack {
+        NavigationStack {
+            ZStack {
                 Color.parchment.ignoresSafeArea()
                 
                 if notes.isEmpty {
@@ -158,6 +159,7 @@ struct MainTimelineView: View {
                     }
                 }
             }
+            .navigationTitle("Sermon Flow Journal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -179,7 +181,6 @@ struct MainTimelineView: View {
                     PresentationModeView(note: note)
                 }
             }
-
             .onAppear {
                 firebaseService.listenToNotes { updatedNotes in
                     self.notes = updatedNotes
@@ -193,6 +194,7 @@ struct MainTimelineView: View {
                     requestReview()
                 }
             }
+        }
         .sheet(isPresented: $showingShareSheet) {
             if let url = shareURL {
                 ShareSheet(activityItems: [url])

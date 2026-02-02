@@ -110,63 +110,55 @@ struct MainTimelineView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                            .foregroundColor(.charcoal)
+                    }
+                }
+                
                 ToolbarItem(placement: .principal) {
                     Button(action: {
                         scrollToTopTrigger.toggle()
                     }) {
                         HStack(spacing: 4) {
                             Text("Sermon Flow Journal")
-                                .font(SermonFont.serif(size: 20, weight: .bold))
+                                .font(SermonFont.serif(size: 18, weight: .bold))
                             Image(systemName: "chevron.up.circle.fill")
                                 .font(.system(size: 12))
                                 .foregroundColor(.sermonGold)
                         }
-                        .foregroundColor(.black)
+                        .foregroundColor(.charcoal)
                     }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        if !purchaseManager.isSubscribed && notes.count >= freeNoteLimit {
-                            showPaywall = true
-                        } else {
-                            selectedNote = nil
-                            showingEditor = true
-                        }
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundColor(purchaseManager.isSubscribed || notes.count < freeNoteLimit ? .charcoal : .gray)
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        if purchaseManager.isSubscribed {
-                            if let first = filteredNotes.first {
-                                presentationNote = first
-                                showingPresentation = true
+                    HStack(spacing: 16) {
+                        Button(action: {
+                            if !purchaseManager.isSubscribed && notes.count >= freeNoteLimit {
+                                showPaywall = true
+                            } else {
+                                selectedNote = nil
+                                showingEditor = true
                             }
-                        } else {
-                            showPaywall = true
+                        }) {
+                            Image(systemName: "plus")
+                                .foregroundColor(purchaseManager.isSubscribed || notes.count < freeNoteLimit ? .charcoal : .gray)
                         }
-                    }) {
-                    Image(systemName: "play.presentation")
-                        .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .charcoal.opacity(0.3))
-                        .overlay(alignment: .topTrailing) {
-                            if !purchaseManager.isSubscribed {
-                                Image(systemName: "crown.fill")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.sermonGold)
-                                    .offset(x: 4, y: -4)
+                        
+                        Button(action: {
+                            if purchaseManager.isSubscribed {
+                                if let first = filteredNotes.first {
+                                    presentationNote = first
+                                    showingPresentation = true
+                                }
+                            } else {
+                                showPaywall = true
                             }
+                        }) {
+                            Image(systemName: purchaseManager.isSubscribed ? "play.presentation" : "crown.fill")
+                                .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .sermonGoldDark)
                         }
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gearshape")
-                            .foregroundColor(.charcoal)
                     }
                 }
             }

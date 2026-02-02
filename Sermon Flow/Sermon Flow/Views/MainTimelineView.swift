@@ -87,17 +87,67 @@ struct MainTimelineView: View {
                                     }
                                 }
                                 
-                                // Floating Scroll to Top Button
-                                Button(action: {
-                                    scrollToTopTrigger.toggle()
-                                }) {
-                                    Image(systemName: "chevron.up")
-                                        .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(.white)
-                                        .padding()
-                                        .background(Color.sermonGold)
-                                        .clipShape(Circle())
-                                        .shadow(radius: 4)
+                                // Floating Action Buttons Stack
+                                VStack(spacing: 16) {
+                                    // Presentation Button (if subscribed)
+                                    if purchaseManager.isSubscribed {
+                                        Button(action: {
+                                            if let first = filteredNotes.first {
+                                                presentationNote = first
+                                                showingPresentation = true
+                                            }
+                                        }) {
+                                            Image(systemName: "play.presentation")
+                                                .font(.system(size: 18, weight: .bold))
+                                                .foregroundColor(.white)
+                                                .padding(12)
+                                                .background(Color.sermonGold)
+                                                .clipShape(Circle())
+                                                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                                        }
+                                    }
+                                    
+                                    // Settings Button
+                                    NavigationLink(destination: SettingsView()) {
+                                        Image(systemName: "gearshape.fill")
+                                            .font(.system(size: 18, weight: .bold))
+                                            .foregroundColor(.white)
+                                            .padding(12)
+                                            .background(Color.charcoal)
+                                            .clipShape(Circle())
+                                            .shadow(color: Color.black.opacity(0.15), radius: 6, x: 0, y: 3)
+                                    }
+                                    
+                                    // Scroll to Top
+                                    Button(action: {
+                                        scrollToTopTrigger.toggle()
+                                    }) {
+                                        Image(systemName: "chevron.up")
+                                            .font(.system(size: 18, weight: .bold))
+                                            .foregroundColor(.white)
+                                            .padding(12)
+                                            .background(Color.charcoal.opacity(0.3))
+                                            .clipShape(Circle())
+                                            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+                                    }
+                                    
+                                    // Create Note (Primary FAB)
+                                    Button(action: {
+                                        if !purchaseManager.isSubscribed && notes.count >= freeNoteLimit {
+                                            showPaywall = true
+                                        } else {
+                                            selectedNote = nil
+                                            showingEditor = true
+                                        }
+                                    }) {
+                                        Image(systemName: "plus")
+                                            .font(.system(size: 24, weight: .bold))
+                                            .foregroundColor(.white)
+                                            .padding(18)
+                                            .background(Color.sermonGold)
+                                            .clipShape(Circle())
+                                            .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+                                    }
                                 }
                                 .padding(.trailing, 20)
                                 .padding(.bottom, 20)
@@ -110,56 +160,10 @@ struct MainTimelineView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gearshape")
-                            .foregroundColor(.charcoal)
-                    }
-                }
-                
                 ToolbarItem(placement: .principal) {
-                    Button(action: {
-                        scrollToTopTrigger.toggle()
-                    }) {
-                        HStack(spacing: 4) {
-                            Text("Sermon Flow Journal")
-                                .font(SermonFont.serif(size: 18, weight: .bold))
-                            Image(systemName: "chevron.up.circle.fill")
-                                .font(.system(size: 12))
-                                .foregroundColor(.sermonGold)
-                        }
+                    Text("Sermon Flow Journal")
+                        .font(SermonFont.serif(size: 18, weight: .bold))
                         .foregroundColor(.charcoal)
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 16) {
-                        Button(action: {
-                            if !purchaseManager.isSubscribed && notes.count >= freeNoteLimit {
-                                showPaywall = true
-                            } else {
-                                selectedNote = nil
-                                showingEditor = true
-                            }
-                        }) {
-                            Image(systemName: "plus")
-                                .foregroundColor(purchaseManager.isSubscribed || notes.count < freeNoteLimit ? .charcoal : .gray)
-                        }
-                        
-                        Button(action: {
-                            if purchaseManager.isSubscribed {
-                                if let first = filteredNotes.first {
-                                    presentationNote = first
-                                    showingPresentation = true
-                                }
-                            } else {
-                                showPaywall = true
-                            }
-                        }) {
-                            Image(systemName: purchaseManager.isSubscribed ? "play.presentation" : "crown.fill")
-                                .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .sermonGoldDark)
-                        }
-                    }
                 }
             }
             .searchable(text: $searchText, prompt: "Search notes or verses...")

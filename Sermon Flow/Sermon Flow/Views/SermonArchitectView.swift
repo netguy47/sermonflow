@@ -234,7 +234,7 @@ struct AIDisclosureView: View {
                     .multilineTextAlignment(.center)
                     .foregroundColor(.gray)
                 
-                Text("Architected by SermonFlow AI. Please verify with Scripture.")
+                Text("Architected by Sermon Flow Journal AI. Please verify with Scripture.")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.sermonGold.opacity(0.6))
                     .padding(.top, 4)

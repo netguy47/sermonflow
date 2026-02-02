@@ -116,7 +116,7 @@ struct MainTimelineView: View {
                         scrollToTopTrigger.toggle()
                     }) {
                         HStack(spacing: 4) {
-                            Text("Sermon Flow")
+                            Text("Sermon Flow Journal")
                                 .font(SermonFont.serif(size: 20, weight: .bold))
                             Image(systemName: "chevron.up.circle.fill")
                                 .font(.system(size: 12))

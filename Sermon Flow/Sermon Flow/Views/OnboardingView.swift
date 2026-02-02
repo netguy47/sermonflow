@@ -19,7 +19,7 @@ struct OnboardingView: View {
                 }
                 
                 VStack(spacing: 8) {
-                    Text("SermonFlow")
+                    Text("Sermon Flow Journal")
                         .font(SermonFont.serif(size: 32, weight: .black))
                         .foregroundColor(.charcoal)
                     

@@ -7,7 +7,7 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section(header: Text("SermonFlow Pro")
+            Section(header: Text("Sermon Flow Journal Pro")
                 .font(SermonFont.serif(size: 13, weight: .bold))
                 .foregroundColor(.sermonGoldDark)
                 .textCase(.uppercase)

@@ -12,10 +12,10 @@ struct MainTimelineView: View {
     @State private var showPaywall = false
     @State private var shareURL: URL? = nil
     @State private var showingShareSheet = false
+    @State private var showingPresentation = false
+    @State private var presentationNote: SermonNote? = nil
     @State private var scrollToTopTrigger = false
-    
     private let freeNoteLimit = 5
-    
     
     var filteredNotes: [SermonNote] {
         notes.filter { note in
@@ -53,7 +53,15 @@ struct MainTimelineView: View {
                                         NoteCardView(
                                             note: note,
                                             onDelete: { deleteNote(note) },
-                                            onExport: { exportToPDF(note: note) }
+                                            onExport: { exportToPDF(note: note) },
+                                            onPlay: {
+                                                if purchaseManager.isSubscribed {
+                                                    presentationNote = note
+                                                    showingPresentation = true
+                                                } else {
+                                                    showPaywall = true
+                                                }
+                                            }
                                         )
                                         .listRowBackground(Color.clear)
                                         .listRowSeparator(.hidden)
@@ -135,13 +143,24 @@ struct MainTimelineView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         if purchaseManager.isSubscribed {
-                            // Presentation Mode Logic
+                            if let first = filteredNotes.first {
+                                presentationNote = first
+                                showingPresentation = true
+                            }
                         } else {
                             showPaywall = true
                         }
                     }) {
-                        Image(systemName: "play.presentation")
-                            .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .charcoal)
+                    Image(systemName: "play.presentation")
+                        .foregroundColor(purchaseManager.isSubscribed ? .sermonGold : .charcoal.opacity(0.3))
+                        .overlay(alignment: .topTrailing) {
+                            if !purchaseManager.isSubscribed {
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundColor(.sermonGold)
+                                    .offset(x: 4, y: -4)
+                            }
+                        }
                     }
                 }
                 
@@ -160,6 +179,12 @@ struct MainTimelineView: View {
                 SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
                     .subscriptionStoreControlStyle(.picker)
             }
+            .fullScreenCover(isPresented: $showingPresentation) {
+                if let note = presentationNote {
+                    PresentationModeView(note: note)
+                }
+            }
+
             .onAppear {
                 firebaseService.listenToNotes { updatedNotes in
                     self.notes = updatedNotes
@@ -167,6 +192,11 @@ struct MainTimelineView: View {
                 
                 // Sign in anonymously if not already
                 firebaseService.signInAnonymously { _ in }
+                
+                // Request App Store Rating after 3 notes
+                if notes.count >= 3 {
+                    requestReview()
+                }
             }
         }
         .sheet(isPresented: $showingShareSheet) {
@@ -175,6 +205,12 @@ struct MainTimelineView: View {
             }
         }
         .accentColor(.sermonGold)
+    }
+    
+    private func requestReview() {
+        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+            SKStoreReviewController.requestReview(in: scene)
+        }
     }
     
     private func deleteNote(_ note: SermonNote) {

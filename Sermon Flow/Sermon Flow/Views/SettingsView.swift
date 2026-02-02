@@ -8,17 +8,19 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section(header: Text("SermonFlow Pro")
-                .font(SermonFont.caption())
-                .foregroundColor(.charcoal.opacity(0.8))) {
+                .font(SermonFont.serif(size: 13, weight: .bold))
+                .foregroundColor(.sermonGoldDark)
+                .textCase(.uppercase)
+                .kerning(1.2)) {
                 HStack {
                     VStack(alignment: .leading) {
                         Text(purchaseManager.isSubscribed ? "Pro Active" : "Unlock Pro")
-                            .font(SermonFont.body(size: 16))
-                            .foregroundColor(purchaseManager.isSubscribed ? .sermonGoldDark : .primary)
+                            .font(SermonFont.body(size: 16, weight: .semibold))
+                            .foregroundColor(purchaseManager.isSubscribed ? .sermonGoldDark : .charcoal)
                         
                         Text(purchaseManager.isSubscribed ? "Thank you for your support!" : "Unlimited presentations & more.")
                             .font(SermonFont.caption())
-                            .foregroundColor(.gray)
+                            .foregroundColor(.charcoal.opacity(0.8)) // Darkened from 0.5
                     }
                     
                     Spacer()
@@ -30,8 +32,7 @@ struct SettingsView: View {
                             }
                         }) {
                             Text("Upgrade")
-                                .font(SermonFont.caption())
-                                .bold()
+                                .font(SermonFont.caption(size: 12, weight: .bold))
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
                                 .background(Color.sermonGold)
@@ -41,14 +42,20 @@ struct SettingsView: View {
                         .buttonStyle(BouncyButtonStyle())
                     } else {
                         Image(systemName: "checkmark.seal.fill")
-                            .foregroundColor(.sermonGold)
+                            .font(.system(size: 20))
+                            .foregroundColor(.sermonGoldDark)
                     }
                 }
             }
             
             Section(header: Text("Information")
-                .font(SermonFont.caption())
-                .foregroundColor(.charcoal.opacity(0.8))) {
+                .font(SermonFont.serif(size: 13, weight: .bold))
+                .foregroundColor(.charcoal.opacity(0.75)) // Improved header contrast
+                .textCase(.uppercase)
+                .kerning(1.2)) {
+                
+                ReminderToggleRow()
+                
                 NavigationLink(destination: PrivacyPolicyView()) {
                     Text("Privacy Policy")
                         .font(SermonFont.body(size: 16))
@@ -61,8 +68,10 @@ struct SettingsView: View {
             }
             
             Section(header: Text("App Info")
-                .font(SermonFont.caption())
-                .foregroundColor(.charcoal.opacity(0.8))) {
+                .font(SermonFont.serif(size: 13, weight: .bold))
+                .foregroundColor(.charcoal.opacity(0.75)) // Improved header contrast
+                .textCase(.uppercase)
+                .kerning(1.2)) {
                 HStack {
                     Text("Version")
                         .font(SermonFont.body(size: 16))
@@ -79,6 +88,31 @@ struct SettingsView: View {
         .sheet(isPresented: $showPaywall) {
             SubscriptionStoreView(groupID: "SF_PREMIUM_GROUP")
                 .subscriptionStoreControlStyle(.picker)
+        }
+    }
+}
+
+struct ReminderToggleRow: View {
+    @AppStorage("mondayRecallEnabled") private var mondayRecallEnabled = true
+    
+    var body: some View {
+        Toggle(isOn: $mondayRecallEnabled) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Monday Recall")
+                    .font(SermonFont.body(size: 16, weight: .semibold))
+                    .foregroundColor(.charcoal)
+                Text("Morning reflection on your life application.")
+                    .font(SermonFont.caption())
+                    .foregroundColor(.charcoal.opacity(0.7)) // Improved secondary contrast
+            }
+        }
+        .tint(.sermonGoldDark)
+        .onChange(of: mondayRecallEnabled) { oldValue, newValue in
+            if newValue {
+                NotificationManager.shared.requestAuthorization()
+            } else {
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["MondayRecall"])
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ struct NoteCardView: View {
     let note: SermonNote
     var onDelete: (() -> Void)? = nil
     var onExport: (() -> Void)? = nil
+    var onPlay: (() -> Void)? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -30,6 +31,12 @@ struct NoteCardView: View {
                     }
                     
                     Menu {
+                        if let onPlay = onPlay {
+                            Button(action: onPlay) {
+                                Label("Play Session", systemImage: "play.presentation")
+                            }
+                        }
+                        
                         if let onExport = onExport {
                             Button(action: onExport) {
                                 Label("Export to PDF", systemImage: "doc.richtext")
@@ -51,19 +58,44 @@ struct NoteCardView: View {
             
             Text(note.body)
                 .font(SermonFont.body())
-                .foregroundColor(Color.charcoal)
+                .foregroundColor(Color.charcoal) // Solid black/dark
                 .lineLimit(4)
                 .multilineTextAlignment(.leading)
             
+            if let verses = note.detectedVerses, !verses.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(verses, id: \.self) { ref in
+                            HStack(spacing: 4) {
+                                Image(systemName: "book.fill")
+                                    .font(.system(size: 10))
+                                Text(ref)
+                                    .font(SermonFont.caption(size: 11, weight: .bold))
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(Color.sermonGold.opacity(0.12))
+                            .foregroundColor(.sermonGoldDark)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.sermonGoldDark.opacity(0.2), lineWidth: 1)
+                            )
+                        }
+                    }
+                }
+                .padding(.top, 4)
+            }
+            
             HStack {
                 Text(note.timestamp, style: .date)
-                    .font(SermonFont.caption())
-                    .foregroundColor(Color.charcoal.opacity(0.6))
+                    .font(SermonFont.caption(size: 12, weight: .bold)) // Darker + Bold
+                    .foregroundColor(Color.charcoal.opacity(0.7)) // Increased from 0.5
                 
                 if note.id != nil {
                     Image(systemName: "icloud.and.arrow.up")
                         .font(.system(size: 10))
-                        .foregroundColor(.green.opacity(0.6))
+                        .foregroundColor(.sermonGoldDark.opacity(0.6))
                         .help("Synced to Cloud")
                 }
                 
@@ -71,26 +103,28 @@ struct NoteCardView: View {
                 
                 if note.isLifeApplication {
                     Text("Life Application")
-                        .font(SermonFont.caption(size: 12))
+                        .font(SermonFont.caption(size: 11, weight: .bold))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Color.sermonGold.opacity(0.2))
-                        .cornerRadius(4)
+                        .foregroundColor(.sermonGoldDark)
+                        .background(Color.sermonGold.opacity(0.12))
+                        .cornerRadius(6)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(Color.sermonGold, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(Color.sermonGoldDark.opacity(0.2), lineWidth: 1)
                         )
                 }
             }
         }
-        .padding()
-        .background(Color.white.opacity(0.5))
-        .cornerRadius(12)
+        .padding(18) // Increased internal padding for better breathing room
+        .background(Color.white.opacity(0.55))
+        .cornerRadius(16)
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(note.isLifeApplication ? Color.sermonGold : Color.clear, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(note.isLifeApplication ? Color.sermonGoldDark.opacity(0.3) : Color.clear, lineWidth: 1.5)
         )
-        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.02), radius: 6, x: 0, y: 3)
+        .contentShape(Rectangle())
     }
 }
 

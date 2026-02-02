@@ -21,92 +21,140 @@ struct SermonArchitectView: View {
                     if !generationComplete {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Sermon Architect")
-                                .font(SermonFont.title())
+                                .font(SermonFont.title(size: 28))
                                 .foregroundColor(.charcoal)
                             
                             Text("Transform a single topic into a structured sermon outline with AI intelligence.")
                                 .font(SermonFont.body(size: 16))
-                                .foregroundColor(.gray)
+                                .foregroundColor(.charcoal.opacity(0.6))
                         }
                         .padding(.horizontal)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
                         
                         TextField("Enter topic (e.g. Grace)", text: $topic)
-                            .padding()
-                            .background(Color.white.opacity(0.5))
-                            .cornerRadius(12)
+                            .padding(20)
+                            .background(Color.white.opacity(0.6)) // Normalized contrast
+                            .cornerRadius(16)
+                            .shadow(color: Color.black.opacity(0.02), radius: 6, x: 0, y: 3) // Standardized shadow
                             .padding(.horizontal)
+                            .transition(.opacity)
                         
-                                Button(action: {
-                                    if !purchaseManager.isSubscribed {
-                                        showPaywall = true
-                                    } else {
-                                        showingDisclosure = true
-                                    }
-                                }) {
-                                    Text("Generate Outline")
-                                        .font(SermonFont.body(size: 18))
-                                        .bold()
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(topic.isEmpty ? Color.gray : Color.sermonGold)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(12)
-                                }
-                                .buttonStyle(PressedButtonStyle())
-                                .disabled(topic.isEmpty || isGenerating)
-                                .padding(.horizontal)
-                                
-                                if isGenerating {
-                                    VStack(spacing: 16) {
-                                        ProgressView()
-                                            .tint(.sermonGold)
-                                        Text("Nexus Core is architecting...")
-                                            .font(SermonFont.caption())
-                                            .foregroundColor(.gray)
-                                    }
-                                    .padding(.top)
+                        Button(action: {
+                            if !purchaseManager.isSubscribed {
+                                withAnimation(.spring()) {
+                                    showPaywall = true
                                 }
                             } else {
-                                // Result View
-                                ScrollView {
-                                    VStack(alignment: .leading, spacing: 20) {
-                                        Text(topic)
-                                            .font(SermonFont.title())
-                                            .foregroundColor(.sermonGold)
+                                withAnimation(.spring()) {
+                                    showingDisclosure = true
+                                }
+                            }
+                        }) {
+                            Text("Generate Outline")
+                                .font(SermonFont.body(size: 18, weight: .bold))
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(topic.isEmpty ? Color.charcoal.opacity(0.1) : Color.sermonGoldDark)
+                                .foregroundColor(topic.isEmpty ? .charcoal.opacity(0.3) : .white)
+                                .cornerRadius(16)
+                        }
+                        .buttonStyle(PressedButtonStyle())
+                        .disabled(topic.isEmpty || isGenerating)
+                        .padding(.horizontal)
+                        .transition(.opacity)
+                        
+                        if isGenerating {
+                            VStack(spacing: 20) {
+                                ProgressView()
+                                    .scaleEffect(1.2)
+                                    .tint(.sermonGoldDark)
+                                Text("Nexus Core is architecting...")
+                                    .font(SermonFont.caption(size: 14, weight: .semibold))
+                                    .foregroundColor(.sermonGoldDark.opacity(0.7))
+                            }
+                            .padding(.top, 20)
+                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                        }
+                    } else {
+                        // Result View
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 24) {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Architected Outline")
+                                        .font(SermonFont.caption(size: 12, weight: .bold))
+                                        .foregroundColor(.sermonGoldDark)
+                                        .textCase(.uppercase)
+                                        .kerning(1.5)
+                                    
+                                    Text(topic)
+                                        .font(SermonFont.title(size: 32))
+                                        .foregroundColor(.charcoal)
+                                }
+                                
+                                CardSection(title: "Overview") {
+                                    Text("Faithful reflections on the grace of the prodigal son and the father's heart.")
+                                        .font(SermonFont.body(size: 18))
+                                        .italic()
+                                        .foregroundColor(.charcoal.opacity(0.8))
+                                        .padding(.vertical, 4)
+                                }
+                                
+                                CardSection(title: "Theological Structure") {
+                                    VStack(alignment: .leading, spacing: 16) {
+                                        let points = [
+                                            "I. The Departure: A Heart Seeking Autonomy",
+                                            "II. The Descent: The Reality of Exile",
+                                            "III. The Return: Grace Before Conversion",
+                                            "IV. The Restoration: A Father's Extravagant Love"
+                                        ]
                                         
-                                        Text("Faithful reflections on the grace of the prodigal son and the father's heart.")
-                                            .font(SermonFont.body(size: 18))
-                                            .italic()
-                                        
-                                        Divider()
-                                        
-                                        Text("I. The Departure: A Heart Seeking Autonomy\nII. The Descent: The Reality of Exile\nIII. The Return: Grace Before Conversion\nIV. The Restoration: A Father's Extravagant Love")
-                                            .font(SermonFont.body(size: 16))
-                                            .lineSpacing(8)
+                                        ForEach(points, id: \.self) { point in
+                                            HStack(alignment: .top, spacing: 12) {
+                                                Image(systemName: "sparkles")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.sermonGoldDark)
+                                                    .padding(.top, 4)
+                                                Text(point)
+                                                    .font(SermonFont.body(size: 16, weight: .medium))
+                                                    .foregroundColor(.charcoal)
+                                            }
+                                        }
                                     }
-                                    .padding()
                                 }
                                 
                                 HStack {
                                     Button(action: { showingReport = true }) {
-                                        Label("Report Content", systemImage: "flag")
-                                            .font(SermonFont.caption())
-                                            .foregroundColor(.red.opacity(0.8))
+                                        Label("Report Hallucination", systemImage: "flag.fill")
+                                            .font(SermonFont.caption(size: 12, weight: .semibold))
+                                            .foregroundColor(.red.opacity(0.7))
                                     }
                                     Spacer()
-                                    Button("Start Over") {
-                                        generationComplete = false
-                                        topic = ""
+                                    Button(action: {
+                                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                            generationComplete = false
+                                            topic = ""
+                                        }
+                                    }) {
+                                        HStack {
+                                            Image(systemName: "arrow.counterclockwise")
+                                            Text("Start Over")
+                                        }
+                                        .font(SermonFont.caption(size: 13, weight: .bold))
+                                        .foregroundColor(.charcoal.opacity(0.6))
                                     }
-                                    .font(SermonFont.caption())
-                                    .foregroundColor(.charcoal)
                                 }
-                                .padding()
+                                .padding(.top, 10)
                             }
-                            
-                            Spacer()
+                            .padding(20)
                         }
-                        .padding(.top, 40)
+                        .transition(.asymmetric(insertion: .opacity.combined(with: .move(edge: .bottom)), removal: .opacity))
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.top, 20)
+                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: generationComplete)
+                .animation(.spring(), value: isGenerating)
                     }
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {

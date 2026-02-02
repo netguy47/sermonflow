@@ -25,6 +25,7 @@ struct NewNoteView: View {
     }
     
     @State private var showingDeleteAlert = false
+    @AppStorage("mondayRecallEnabled") private var mondayRecallEnabled = true
     
     var isSaveDisabled: Bool {
         title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || 
@@ -37,99 +38,154 @@ struct NewNoteView: View {
                 Color.parchment.ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 24) {
-                        // Section 1: Title & Context
-                        CardSection {
-                            VStack(spacing: 12) {
-                                TextField("Sermon Title", text: $title)
-                                    .font(SermonFont.title())
-                                    .foregroundColor(.charcoal)
-                                    .focused($focusedField, equals: .title)
-                                    .submitLabel(.next)
-                                    .overlay(alignment: .trailing) {
-                                        if title.isEmpty && !bodyText.isEmpty {
-                                            Button("Suggest Title") {
-                                                suggestTitle()
-                                            }
-                                            .font(SermonFont.caption(size: 10, weight: .bold))
-                                            .foregroundColor(.sermonGold)
-                                            .padding(.horizontal, 8)
-                                            .padding(.vertical, 4)
-                                            .background(Color.sermonGold.opacity(0.1))
-                                            .cornerRadius(4)
-                                        }
-                                    }
-                                    .onSubmit {
-                                        focusedField = .series
-                                    }
-                                
-                                Divider()
-                                
-                                HStack {
-                                    Image(systemName: "folder")
-                                        .foregroundColor(.sermonGold)
-                                    TextField("Series (Optional)", text: $seriesTitle)
-                                        .font(SermonFont.body(size: 16))
-                                        .focused($focusedField, equals: .series)
-                                        .submitLabel(.next)
-                                        .onSubmit {
-                                            focusedField = .body
-                                        }
-                                }
+                    VStack(alignment: .leading, spacing: 28) { // Normalized rhythm
+                        // Title Section
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "pencil.line")
+                                    .foregroundColor(focusedField == .title ? .sermonGold : .charcoal)
+                                Text("SERMON TITLE")
+                                    .font(SermonFont.caption(size: 11, weight: .black))
+                                    .foregroundColor(focusedField == .title ? .sermonGoldDark : .charcoal.opacity(0.7))
+                                    .kerning(1.2)
                             }
+                            
+                            TextField("What is this message called?", text: $title)
+                                .font(SermonFont.title(size: 24))
+                                .foregroundColor(.charcoal)
+                                .focused($focusedField, equals: .title)
+                                .overlay(alignment: .trailing) {
+                                    if !title.isEmpty {
+                                        Button(action: { title = "" }) {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(.gray.opacity(0.3))
+                                        }
+                                    }
+                                }
+                            
+                            Divider()
+                                .background(focusedField == .title ? Color.sermonGold : Color.gray.opacity(0.3))
+                                .scaleEffect(y: focusedField == .title ? 1.5 : 1.0)
                         }
-                        .padding(.top, 12)
                         
-                        // Section 2: Life Application & Subtitle
-                        CardSection {
-                            Toggle(isOn: $isLifeApplication.animation(.spring(response: 0.3, dampingFraction: 0.6))) {
+                        // Series Section
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: "folder")
+                                    .foregroundColor(focusedField == .series ? .sermonGold : .charcoal)
+                                Text("SERMON SERIES")
+                                    .font(SermonFont.caption(size: 11, weight: .black))
+                                    .foregroundColor(focusedField == .series ? .sermonGoldDark : .charcoal.opacity(0.7))
+                                    .kerning(1.2)
+                            }
+                            
+                            TextField("e.g. The King of Kings (Optional)", text: $seriesTitle)
+                                .font(SermonFont.body(size: 18))
+                                .foregroundColor(.charcoal)
+                                .focused($focusedField, equals: .series)
+                            
+                            Divider()
+                                .background(focusedField == .series ? Color.sermonGold : Color.gray.opacity(0.3))
+                                .scaleEffect(y: focusedField == .series ? 1.5 : 1.0)
+                        }
+                        
+                        // Life Application Toggle Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            Toggle(isOn: $isLifeApplication.animation(.spring())) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Life Application")
-                                        .font(SermonFont.body(size: 16))
-                                        .foregroundColor(.charcoal)
-                                    Text("Highlight practical takeaways for later review")
+                                    HStack {
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.sermonGold)
+                                        Text("LIFE APPLICATION")
+                                            .font(SermonFont.caption(size: 11, weight: .black))
+                                            .foregroundColor(.charcoal.opacity(0.7))
+                                            .kerning(1.2)
+                                    }
+                                    Text("Flag this as a practical takeaway for Monday recall")
                                         .font(SermonFont.caption(size: 12))
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.charcoal.opacity(0.5))
                                 }
                             }
-                            .tint(.sermonGold)
+                            .tint(.sermonGoldDark)
+                            
+                            Divider()
+                                .background(Color.gray.opacity(0.2))
                         }
                         
-                        // Section 3: Notes & Scripture Detection
-                        CardSection(title: "Sermon Notes") {
-                            VStack(alignment: .leading, spacing: 16) {
-                                PlaceholderTextEditor(
-                                    placeholder: "Start writing your sermon notes...",
-                                    text: $bodyText,
-                                    focusedField: $focusedField,
-                                    equals: Field.body
-                                )
-                                .frame(minHeight: 250)
-                                .onChange(of: bodyText) { oldValue, newValue in
-                                    withAnimation(.spring()) {
+                        // Body Notes Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "text.alignleft")
+                                    .foregroundColor(focusedField == .body ? .sermonGold : .charcoal)
+                                Text("NOTES & SCRIPTURE")
+                                    .font(SermonFont.caption(size: 11, weight: .black))
+                                    .foregroundColor(focusedField == .body ? .sermonGoldDark : .charcoal.opacity(0.7))
+                                    .kerning(1.2)
+                                
+                                Spacer()
+                                
+                                if !bodyText.isEmpty && title.isEmpty {
+                                    Button(action: suggestTitle) {
+                                        HStack(spacing: 4) {
+                                            Text("Suggest Title")
+                                            Image(systemName: "wand.and.stars")
+                                        }
+                                        .font(SermonFont.caption(size: 11, weight: .bold))
+                                        .padding(.horizontal, 14) // Increased tap target width
+                                        .padding(.vertical, 8)    // Increased tap target height
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.sermonGold.opacity(0.12))
+                                        )
+                                        .foregroundColor(.sermonGoldDark)
+                                    }
+                                    .contentShape(Rectangle()) // Ensure full area is tappable
+                                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                                }
+                            }
+                            
+                            ZStack(alignment: .topLeading) {
+                                if bodyText.isEmpty {
+                                    Text("Begin typing your notes here...")
+                                        .font(SermonFont.body(size: 18))
+                                        .foregroundColor(.charcoal.opacity(0.45)) // Improved contrast
+                                        .padding(.top, 10)
+        
+                                        .padding(.leading, 4)
+                                }
+                                
+                                TextEditor(text: $bodyText)
+                                    .font(SermonFont.body(size: 18))
+                                    .foregroundColor(.charcoal)
+                                    .frame(minHeight: 300)
+                                    .focused($focusedField, equals: .body)
+                                    .scrollContentBackground(.hidden)
+                                    .onChange(of: bodyText) { oldValue, newValue in
                                         detectVerses(in: newValue)
                                     }
-                                }
-                                
-                                if !detectedVerses.isEmpty {
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        HStack {
-                                            Text("Scripture Detected")
-                                                .font(SermonFont.serif(size: 12, weight: .bold))
-                                                .foregroundColor(.sermonGold)
-                                                .textCase(.uppercase)
-                                            Spacer()
-                                        }
-                                        
+                            }
+                            
+                            // Interactive Scripture Detection
+                            if !detectedVerses.isEmpty {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    Text("SCRIPTURE DETECTED")
+                                        .font(SermonFont.caption(size: 11, weight: .black))
+                                        .foregroundColor(.sermonGoldDark)
+                                        .kerning(1.2)
+                                    
+                                    VStack(spacing: 12) {
                                         ForEach(detectedVerses, id: \.self) { ref in
                                             ScriptureBadge(
                                                 reference: ref,
-                                                verseText: ScriptureEngine.shared.findVerse(reference: ref)
+                                                verseText: ScriptureEngine.shared.findVerse(reference: ref),
+                                                onInsertText: { insertScripture(ref: ref, includeText: true) },
+                                                onInsertReference: { insertScripture(ref: ref, includeText: false) }
                                             )
                                         }
                                     }
-                                    .padding(.horizontal, 4)
                                 }
+                                .padding(.top, 8)
+                                .transition(.asymmetric(insertion: .push(from: .bottom), removal: .opacity))
                             }
                         }
                         
@@ -149,38 +205,33 @@ struct NewNoteView: View {
                                 .background(Color.red.opacity(0.1))
                                 .cornerRadius(12)
                             }
-                            .padding(.horizontal)
+                            .padding(.vertical, 16)
                         }
                         
-                        Spacer(minLength: 120) // Bottom padding for keyboard
+                        Spacer(minLength: 120)
                     }
+                    .padding(20)
                 }
             }
             .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
             .navigationBarTitleDisplayMode(.inline)
             .alert("Delete Note?", isPresented: $showingDeleteAlert) {
-                Button("Delete", role: .destructive) {
-                    deleteNote()
-                }
+                Button("Delete", role: .destructive) { deleteNote() }
                 Button("Cancel", role: .cancel) { }
             } message: {
                 Text("This action cannot be undone. Are you sure you want to permanently delete this sermon note?")
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .foregroundColor(.charcoal)
+                    Button("Cancel") { dismiss() }
+                        .foregroundColor(.charcoal)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveNote()
-                    }
-                    .font(.headline)
-                    .foregroundColor(isSaveDisabled ? .gray : .sermonGold)
-                    .disabled(isSaveDisabled)
+                    Button("Save") { saveNote() }
+                        .font(.headline)
+                        .foregroundColor(isSaveDisabled ? .gray : .sermonGold)
+                        .disabled(isSaveDisabled)
                 }
             }
             .onAppear {
@@ -188,6 +239,31 @@ struct NewNoteView: View {
                     focusedField = .title
                 }
             }
+        }
+    }
+    
+    private func insertScripture(ref: String, includeText: Bool) {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
+        // Define what we're inserting
+        var insertion = "(\(ref))"
+        if includeText, let text = ScriptureEngine.shared.findVerse(reference: ref) {
+            insertion = "\"\(text)\" (\(ref))"
+        }
+        
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            // Bulletproof In-Place Replacement:
+            // Find the most likely occurrence of the reference in the text
+            if let range = bodyText.range(of: ref, options: .backwards) {
+                // If the reference is already in parentheses, replace the whole thing
+                // Otherwise, just replace the reference string
+                bodyText.replaceSubrange(range, with: insertion)
+            } else {
+                // Fallback to appending if for some reason the reference isn't found
+                bodyText += "\n" + insertion
+            }
+            detectVerses(in: bodyText)
         }
     }
     
@@ -225,13 +301,19 @@ struct NewNoteView: View {
             body: bodyText,
             timestamp: existingNote?.timestamp ?? Date(),
             isLifeApplication: isLifeApplication,
-            seriesTitle: seriesTitle.isEmpty ? nil : seriesTitle
+            seriesTitle: seriesTitle.isEmpty ? nil : seriesTitle,
+            detectedVerses: detectedVerses.isEmpty ? nil : detectedVerses
         )
         
         FirebaseService.shared.saveNote(note) { error in
             if let error = error {
                 print("Error saving note: \(error.localizedDescription)")
             } else {
+                // Schedule Monday Recall if enabled
+                if isLifeApplication && mondayRecallEnabled {
+                    NotificationManager.shared.scheduleMondayRecall(for: note)
+                }
+                
                 // Sensory feedback on success
                 let generator = UIImpactFeedbackGenerator(style: .medium)
                 generator.impactOccurred()

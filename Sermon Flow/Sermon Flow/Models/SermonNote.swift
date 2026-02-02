@@ -9,8 +9,9 @@ struct SermonNote: Identifiable, Codable {
     var isLifeApplication: Bool
     var seriesTitle: String?
     var seriesId: String?
+    var detectedVerses: [String]?
     
-    init(id: String? = nil, title: String, body: String, timestamp: Date = Date(), isLifeApplication: Bool = false, seriesTitle: String? = nil, seriesId: String? = nil) {
+    init(id: String? = nil, title: String, body: String, timestamp: Date = Date(), isLifeApplication: Bool = false, seriesTitle: String? = nil, seriesId: String? = nil, detectedVerses: [String]? = nil) {
         self.id = id
         self.title = title
         self.body = body
@@ -18,5 +19,6 @@ struct SermonNote: Identifiable, Codable {
         self.isLifeApplication = isLifeApplication
         self.seriesTitle = seriesTitle
         self.seriesId = seriesId
+        self.detectedVerses = detectedVerses
     }
 }

@@ -10,7 +10,7 @@ Follow these 10 steps to submit **SermonFlow** to the App Store.
 - [ ] Add the `GoogleService-Info.plist` to the project root.
 
 ### 🔑 2. Identity & Signing
-- [ ] Set **Bundle ID** to `com.sermonflow.app`.
+- [ ] Set **Bundle ID** to `com.donwoods.Sermon-Flow`.
 - [ ] Enable **In-App Purchase** capability.
 - [ ] Enable **Push Notifications** capability.
 

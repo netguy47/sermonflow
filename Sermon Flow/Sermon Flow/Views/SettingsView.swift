@@ -20,7 +20,7 @@ struct SettingsView: View {
                         
                         Text(purchaseManager.isSubscribed ? "Thank you for your support!" : "Unlimited presentations & more.")
                             .font(SermonFont.caption())
-                            .foregroundColor(.charcoal.opacity(0.8)) // Darkened from 0.5
+                            .foregroundColor(.charcoal.opacity(0.8))
                     }
                     
                     Spacer()
@@ -50,7 +50,7 @@ struct SettingsView: View {
             
             Section(header: Text("Information")
                 .font(SermonFont.serif(size: 13, weight: .bold))
-                .foregroundColor(.charcoal.opacity(0.75)) // Improved header contrast
+                .foregroundColor(.charcoal.opacity(0.75))
                 .textCase(.uppercase)
                 .kerning(1.2)) {
                 
@@ -69,7 +69,7 @@ struct SettingsView: View {
             
             Section(header: Text("App Info")
                 .font(SermonFont.serif(size: 13, weight: .bold))
-                .foregroundColor(.charcoal.opacity(0.75)) // Improved header contrast
+                .foregroundColor(.charcoal.opacity(0.75))
                 .textCase(.uppercase)
                 .kerning(1.2)) {
                 HStack {
@@ -80,6 +80,7 @@ struct SettingsView: View {
                         .font(SermonFont.caption())
                         .foregroundColor(.gray)
                 }
+            }
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -108,7 +109,7 @@ struct ReminderToggleRow: View {
                     .foregroundColor(.charcoal)
                 Text("Morning reflection on your life application.")
                     .font(SermonFont.caption())
-                    .foregroundColor(.charcoal.opacity(0.7)) // Improved secondary contrast
+                    .foregroundColor(.charcoal.opacity(0.7))
             }
         }
         .tint(.sermonGoldDark)
@@ -170,7 +171,7 @@ struct ScriptureCreditsView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         SettingsView()
     }
 }

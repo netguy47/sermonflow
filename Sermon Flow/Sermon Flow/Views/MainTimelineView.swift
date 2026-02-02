@@ -197,7 +197,6 @@ struct MainTimelineView: View {
                     requestReview()
                 }
             }
-        }
         .sheet(isPresented: $showingShareSheet) {
             if let url = shareURL {
                 ShareSheet(activityItems: [url])

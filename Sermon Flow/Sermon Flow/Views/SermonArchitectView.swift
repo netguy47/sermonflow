@@ -192,7 +192,6 @@ struct SermonArchitectView: View {
                         Text("Is this AI-generated content inaccurate or inappropriate?")
                     }
                 }
-            }
             
             private func startGeneration() {
                 isGenerating = true

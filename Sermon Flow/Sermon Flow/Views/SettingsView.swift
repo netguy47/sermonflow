@@ -80,7 +80,7 @@ struct SettingsView: View {
                         .font(SermonFont.caption())
                         .foregroundColor(.gray)
                 }
-            }
+        }
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Settings")

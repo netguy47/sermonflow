@@ -213,8 +213,6 @@ struct NewNoteView: View {
                     .padding(20)
                 }
             }
-            .navigationTitle(existingNote == nil ? "New Note" : "Edit Note")
-            .navigationBarTitleDisplayMode(.inline)
             .alert("Delete Note?", isPresented: $showingDeleteAlert) {
                 Button("Delete", role: .destructive) { deleteNote() }
                 Button("Cancel", role: .cancel) { }
@@ -222,6 +220,12 @@ struct NewNoteView: View {
                 Text("This action cannot be undone. Are you sure you want to permanently delete this sermon note?")
             }
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(existingNote == nil ? "New Note" : "Edit Note")
+                        .font(SermonFont.serif(size: 18, weight: .bold))
+                        .foregroundColor(.charcoal)
+                }
+                
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
                         .foregroundColor(.charcoal)
@@ -240,6 +244,7 @@ struct NewNoteView: View {
                 }
             }
         }
+        .navigationBarTitleDisplayMode(.inline) // Force inline mode at the sheet root level
     }
     
     private func insertScripture(ref: String, includeText: Bool) {

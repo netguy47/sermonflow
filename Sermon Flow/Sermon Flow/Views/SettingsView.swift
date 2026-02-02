@@ -81,9 +81,13 @@ struct SettingsView: View {
                         .foregroundColor(.gray)
                 }
             }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Settings")
+                    .font(SermonFont.serif(size: 18, weight: .bold))
+                    .foregroundColor(.charcoal)
+            }
         }
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
         .background(Color.parchment.ignoresSafeArea())
         .scrollContentBackground(.hidden)
         .sheet(isPresented: $showPaywall) {

@@ -13,8 +13,7 @@ struct SermonArchitectView: View {
     @State private var showPaywall = false
     
     var body: some View {
-        NavigationStack {
-            ZStack {
+        ZStack {
                 Color.parchment.ignoresSafeArea()
                 
                 VStack(spacing: 24) {
@@ -158,6 +157,12 @@ struct SermonArchitectView: View {
                     }
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Text("Sermon Architect")
+                                .font(SermonFont.serif(size: 18, weight: .bold))
+                                .foregroundColor(.charcoal)
+                        }
+                        
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {
                                 selectedTab = 0

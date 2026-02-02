@@ -31,8 +31,7 @@ struct MainTimelineView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
+        ZStack {
                 Color.parchment.ignoresSafeArea()
                 
                 if notes.isEmpty {

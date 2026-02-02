@@ -13,7 +13,7 @@ struct SermonArchitectView: View {
     @State private var showPaywall = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.parchment.ignoresSafeArea()
                 

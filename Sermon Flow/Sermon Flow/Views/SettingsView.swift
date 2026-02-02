@@ -83,6 +83,7 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
         .background(Color.parchment.ignoresSafeArea())
         .scrollContentBackground(.hidden)
         .sheet(isPresented: $showPaywall) {
